@@ -56,7 +56,7 @@ impl Framebuffer {
     ///
     /// The implementation of this method assumes the background color will not change that much.
     pub fn clear(&mut self) {
-        self.buffer = self.empty_buffer.clone();
+        self.buffer.clone_from(&self.empty_buffer)
     }
 
     /// Colors a point in the given location. Rounds x and y.
