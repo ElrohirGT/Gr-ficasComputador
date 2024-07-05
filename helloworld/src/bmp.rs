@@ -93,6 +93,9 @@ fn pad_buffer(buffer: &[u32], width: usize) -> Vec<u8> {
         })
         .collect();
 
+    // The BMP format doesn't start at the top left corner
+    // instead it starts at the bottom left corner, so we need to reverse
+    // the buffer by chunks to have it in the order the BMP format expects.
     buffer
         .as_slice()
         .chunks(width * 3 + padding_bytes_count)
