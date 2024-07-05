@@ -1,4 +1,4 @@
-use crate::color::Color;
+use crate::{bmp::write_bmp_file, color::Color};
 
 #[derive(Debug)]
 pub struct Framebuffer {
@@ -18,12 +18,19 @@ fn create_filled_buffer(width: &usize, height: &usize, color: &Color) -> Buffer 
     (0..(width * height)).map(|_| color_hex).collect()
 }
 
+#[derive(Debug)]
 pub enum PaintPointErrors {
     XTooLarge,
     XTooSmall,
     YTooLarge,
     YTooSmall,
 }
+impl std::fmt::Display for PaintPointErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{:?}", self))
+    }
+}
+impl std::error::Error for PaintPointErrors {}
 
 pub enum GetColorErrors {
     XTooLarge,
@@ -54,6 +61,8 @@ impl Framebuffer {
 
     /// Colors a point in the given location. Rounds x and y.
     /// If either x or y are exactly half between integers then the value is rounded up.
+    /// `x` and `y` are 0 indexed and represent the pixels to go up and right from the lower left
+    /// corner.
     ///
     /// The color used is the one provided by `current_color`.
     pub fn paint_point(&mut self, x: f32, y: f32) -> Result<(), PaintPointErrors> {
@@ -124,5 +133,17 @@ impl Framebuffer {
     /// * `new_color`: The color to apply.
     pub fn set_current_color(&mut self, new_color: Color) {
         self.current_color = new_color;
+    }
+
+    /// Saves the pixel data into a .bmp located in the given `file_path`.
+    pub fn save(&self, file_path: &str) -> std::io::Result<()> {
+        let Framebuffer {
+            width,
+            height,
+            buffer,
+            ..
+        } = self;
+
+        write_bmp_file(file_path, buffer, *width, *height)
     }
 }
