@@ -27,7 +27,7 @@ pub fn write_bmp_file(
     let padded_buffer = pad_buffer(buffer, width);
     let header = generate_header(width, height, padded_buffer.len());
 
-    println!("Padded buffer: {:?}", padded_buffer);
+    // println!("Padded buffer: {:?}", padded_buffer);
 
     writer.write_all(&header)?;
     writer.write_all(&padded_buffer)?;
@@ -38,10 +38,16 @@ pub fn write_bmp_file(
 fn generate_header(width: usize, height: usize, data_byte_length: usize) -> Vec<u8> {
     let byte_file_size = BMP_HEADER_SIZE as u32 + data_byte_length as u32;
 
-    println!(
-        "File size: {}={} + {}",
-        byte_file_size, BMP_HEADER_SIZE, data_byte_length
-    );
+    // println!(
+    //     "File size: {}={} + {}",
+    //     byte_file_size, BMP_HEADER_SIZE, data_byte_length
+    // );
+
+    // println!(
+    //     "The data length (including padding) is: {:?}\n{:?}",
+    //     data_byte_length,
+    //     data_byte_length.to_le_bytes()
+    // );
 
     [&b'B', &b'M']
         .into_iter()
@@ -53,8 +59,8 @@ fn generate_header(width: usize, height: usize, data_byte_length: usize) -> Vec<
         .chain(&height.to_le_bytes()[0..4])
         .chain(&[1, 0]) // This must always be 1 and use two bytes.
         .chain(&BMP_BITS_PER_PIXEL.to_le_bytes()[0..4]) // 24 bits per pixel.
-        .chain(&[0, 0, 0, 0]) // No compression is being used.
-        .chain(&[0, 0, 0, 0]) // Compressed image size, since no compression 0 is used.
+        .chain(&[0, 0]) // No compression is being used.
+        .chain(&(data_byte_length as u32).to_le_bytes()[0..4]) // Compressed image size, since no compression 0 is used.
         .chain(&[0, 0, 0, 0]) // horizontal resolution (0 by default)
         .chain(&[0, 0, 0, 0]) // vertical resolution (0 by default)
         .chain(&[0, 0, 0, 0]) // the number of colors in the pallete, 0 means 2^n colors.
@@ -77,7 +83,7 @@ fn pad_buffer(buffer: &[u32], width: usize) -> Vec<u8> {
         .flat_map(|(i, Color { r, g, b })| {
             // The order is not a typo
             // Microsoft do be smoking...
-            let vec = vec![r, b, g];
+            let vec = vec![b, g, r];
 
             if (i + 1) % width == 0 && i != 0 {
                 vec.into_iter().chain(padding_per_row.clone()).collect()
