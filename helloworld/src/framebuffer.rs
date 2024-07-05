@@ -61,8 +61,6 @@ impl Framebuffer {
 
     /// Colors a point in the given location. Rounds x and y.
     /// If either x or y are exactly half between integers then the value is rounded up.
-    /// `x` and `y` are 0 indexed and represent the pixels to go up and right from the lower left
-    /// corner.
     ///
     /// The color used is the one provided by `current_color`.
     pub fn paint_point(&mut self, point: impl Into<Point>) -> Result<(), PaintPointErrors> {

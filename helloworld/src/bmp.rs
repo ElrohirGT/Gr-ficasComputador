@@ -76,7 +76,7 @@ fn pad_buffer(buffer: &[u32], width: usize) -> Vec<u8> {
     let padding_bytes_count = compute_padding_bytes_per_row(width);
     let padding_per_row: Vec<u8> = (0..padding_bytes_count).map(|_| 0).collect();
 
-    buffer
+    let buffer: Vec<u8> = buffer
         .iter()
         .map(|c| c.into())
         .enumerate()
@@ -91,6 +91,14 @@ fn pad_buffer(buffer: &[u32], width: usize) -> Vec<u8> {
                 vec
             }
         })
+        .collect();
+
+    buffer
+        .as_slice()
+        .chunks(width * 3 + padding_bytes_count)
+        .rev()
+        .flatten()
+        .copied()
         .collect()
 }
 
