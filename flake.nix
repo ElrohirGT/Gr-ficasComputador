@@ -46,7 +46,14 @@
         default = pkgs.mkShell {
           packages = with pkgs; [
             rust-bin.stable.latest.default
+            openssl
+            pkg-config
           ];
+
+          shellHook = ''
+            alias gs="git status"
+            alias e="exit"
+          '';
         };
       };
     };
