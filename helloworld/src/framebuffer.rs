@@ -1,4 +1,4 @@
-use crate::{bmp::write_bmp_file, color::Color};
+use crate::{bmp::write_bmp_file, color::Color, point::Point};
 
 #[derive(Debug)]
 pub struct Framebuffer {
@@ -65,7 +65,7 @@ impl Framebuffer {
     /// corner.
     ///
     /// The color used is the one provided by `current_color`.
-    pub fn paint_point(&mut self, x: f32, y: f32) -> Result<(), PaintPointErrors> {
+    pub fn paint_point(&mut self, point: impl Into<Point>) -> Result<(), PaintPointErrors> {
         let Framebuffer {
             width,
             height,
@@ -73,6 +73,7 @@ impl Framebuffer {
             current_color,
             ..
         } = self;
+        let Point { x, y } = point.into();
 
         if x < 0.0 {
             Err(PaintPointErrors::XTooSmall)?
@@ -115,7 +116,7 @@ impl Framebuffer {
     /// This method should also regenerate the `empty_buffer`.
     ///
     /// * `new_color`: The color to apply.
-    pub fn set_background_color(&mut self, new_color: Color) {
+    pub fn set_background_color(&mut self, new_color: impl Into<Color>) {
         let Framebuffer {
             width,
             height,
@@ -124,15 +125,15 @@ impl Framebuffer {
             ..
         } = self;
 
-        *background_color = new_color;
+        *background_color = new_color.into();
         *empty_buffer = create_filled_buffer(width, height, background_color);
     }
 
     /// Sets the `current_color` property.
     ///
     /// * `new_color`: The color to apply.
-    pub fn set_current_color(&mut self, new_color: Color) {
-        self.current_color = new_color;
+    pub fn set_current_color(&mut self, new_color: impl Into<Color>) {
+        self.current_color = new_color.into();
     }
 
     /// Saves the pixel data into a .bmp located in the given `file_path`.
