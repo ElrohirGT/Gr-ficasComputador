@@ -60,7 +60,7 @@ fn generate_header(width: usize, height: usize, data_byte_length: usize) -> Vec<
         .chain(&[1, 0]) // This must always be 1 and use two bytes.
         .chain(&BMP_BITS_PER_PIXEL.to_le_bytes()[0..4]) // 24 bits per pixel.
         .chain(&[0, 0]) // No compression is being used.
-        .chain(&(data_byte_length as u32).to_le_bytes()[0..4]) // Compressed image size, since no compression 0 is used.
+        .chain(&(data_byte_length as u32).to_le_bytes()[0..4]) // Image data size.
         .chain(&[0, 0, 0, 0]) // horizontal resolution (0 by default)
         .chain(&[0, 0, 0, 0]) // vertical resolution (0 by default)
         .chain(&[0, 0, 0, 0]) // the number of colors in the pallete, 0 means 2^n colors.
@@ -107,9 +107,7 @@ fn pad_buffer(buffer: &[u32], width: usize) -> Vec<u8> {
 
 fn compute_padding_bytes_per_row(width: usize) -> usize {
     let color_bytes_per_row = width * 3;
-    if color_bytes_per_row < 8 {
-        8 - color_bytes_per_row
-    } else {
-        color_bytes_per_row % 8
-    }
+
+    ((4.0 * (color_bytes_per_row as f32 / 4.0).ceil()) - color_bytes_per_row as f32).floor()
+        as usize
 }
