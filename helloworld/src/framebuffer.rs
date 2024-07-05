@@ -1,4 +1,8 @@
-use crate::{bmp::write_bmp_file, color::Color, point::Point};
+use crate::{
+    bmp::write_bmp_file,
+    color::Color,
+    point::{slope, Point},
+};
 
 #[derive(Debug)]
 pub struct Framebuffer {
@@ -94,6 +98,25 @@ impl Framebuffer {
                 Ok(())
             }
         }
+    }
+
+    /// Paints a line that extends from `p1` to `p2` with the color of `current_color`.
+    pub fn paint_line(
+        &mut self,
+        p1: impl Into<Point>,
+        p2: impl Into<Point>,
+    ) -> Result<(), PaintPointErrors> {
+        let p1: Point = p1.into();
+        let p2: Point = p2.into();
+
+        let slope = slope(&p1, &p2);
+        let y_0 = p1.y;
+        let x_0 = p1.x;
+        let start = p1.x.round() as usize;
+        let end = p2.x.round() as usize;
+        (start..=end)
+            .map(|x| (x as f32, y_0 + slope * ((x as f32) - x_0)))
+            .try_for_each(|p| self.paint_point(p))
     }
 
     /// Gets the color of a point in the buffer.
