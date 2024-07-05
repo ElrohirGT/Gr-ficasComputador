@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{BufWriter, Read, Write},
+    io::{BufWriter, Write},
 };
 
 use crate::color::Color;
