@@ -1,3 +1,5 @@
+use std::usize;
+
 use crate::{
     bmp::write_bmp_file,
     color::Color,
@@ -112,11 +114,27 @@ impl Framebuffer {
         let slope = slope(&p1, &p2);
         let y_0 = p1.y;
         let x_0 = p1.x;
-        let start = p1.x.round() as usize;
-        let end = p2.x.round() as usize;
-        (start..=end)
-            .map(|x| (x as f32, y_0 + slope * ((x as f32) - x_0)))
-            .try_for_each(|p| self.paint_point(p))
+        let rounded_start = p1.x.round() as usize;
+        let rounded_end = p2.x.round() as usize;
+
+        let end = rounded_end.max(rounded_start);
+        let start = rounded_start.min(rounded_end);
+
+        if start == end {
+            let rounded_start = p1.y.round() as usize;
+            let rounded_end = p2.y.round() as usize;
+
+            let end = rounded_end.max(rounded_start);
+            let start = rounded_start.min(rounded_end);
+
+            (start..=end)
+                .map(|y| (x_0, y as f32))
+                .try_for_each(|p| self.paint_point(p))
+        } else {
+            (start..=end)
+                .map(|x| (x as f32, y_0 + slope * ((x as f32) - x_0)))
+                .try_for_each(|p| self.paint_point(p))
+        }
     }
 
     /// Gets the color of a point in the buffer.
