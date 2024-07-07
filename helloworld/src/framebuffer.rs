@@ -1,6 +1,7 @@
-use std::usize;
+use std::{ops::Deref, usize};
 
 use crate::{
+    are_equal,
     bmp::write_bmp_file,
     color::Color,
     point::{slope, Point},
@@ -108,32 +109,61 @@ impl Framebuffer {
         p1: impl Into<Point>,
         p2: impl Into<Point>,
     ) -> Result<(), PaintPointErrors> {
-        let p1: Point = p1.into();
-        let p2: Point = p2.into();
+        let Point { x: x0, y: y0 } = p1.into();
+        let Point { x: x1, y: y1 } = p2.into();
 
-        let slope = slope(&p1, &p2);
-        let y_0 = p1.y;
-        let x_0 = p1.x;
-        let rounded_start = p1.x.round() as usize;
-        let rounded_end = p2.x.round() as usize;
+        let delta_x = (x1 - x0).abs();
+        let delta_y = (y1 - y0).abs();
 
-        let end = rounded_end.max(rounded_start);
-        let start = rounded_start.min(rounded_end);
+        let dir_x = if x0 < x1 { 1.0 } else { -1.0 };
+        let dir_y = if y0 < y1 { 1.0 } else { -1.0 };
 
-        if start == end {
-            let rounded_start = p1.y.round() as usize;
-            let rounded_end = p2.y.round() as usize;
+        let mut err = delta_x - delta_y;
 
-            let end = rounded_end.max(rounded_start);
-            let start = rounded_start.min(rounded_end);
+        let mut current_x = x0;
+        let mut current_y = y0;
 
-            (start..=end)
-                .map(|y| (x_0, y as f32))
-                .try_for_each(|p| self.paint_point(p))
-        } else {
-            (start..=end)
-                .map(|x| (x as f32, y_0 + slope * ((x as f32) - x_0)))
-                .try_for_each(|p| self.paint_point(p))
+        loop {
+            self.paint_point((current_x, current_y))?;
+
+            let reached_x1 = are_equal(current_x, x1, f32::EPSILON);
+            let reached_y1 = are_equal(current_y, y1, f32::EPSILON);
+
+            if reached_x1 && reached_y1 {
+                break;
+            }
+
+            let e2 = 2.0 * err;
+
+            if e2 > -delta_y {
+                err -= delta_y;
+                current_x += dir_x;
+            }
+
+            if e2 < delta_x {
+                err += delta_x;
+                current_y += dir_y;
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Paints the given polygon to the screen
+    pub fn paint_polygon<P>(&mut self, mut points: Vec<P>) -> Result<(), PaintPointErrors>
+    where
+        P: Into<Point> + Clone,
+    {
+        match points.len() {
+            1 => self.paint_point(points.remove(0)),
+            _ => {
+                let a = points[0].clone();
+                points.push(a);
+
+                points
+                    .windows(2)
+                    .try_for_each(|ps| self.paint_line(ps[0].clone(), ps[1].clone()))
+            }
         }
     }
 

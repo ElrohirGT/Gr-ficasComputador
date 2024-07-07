@@ -63,27 +63,30 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     framebuffer.save("canva_test.bmp")?;
 
-    let mut framebuffer = Framebuffer::new(8, 4);
+    let mut framebuffer = Framebuffer::new(70, 70);
     framebuffer.clear();
 
     framebuffer.set_background_color(Color::black());
 
-    framebuffer.paint_line((0.0, 0.0), (7.0, 2.0))?;
-
-    // println!("{:?}", framebuffer);
+    framebuffer.paint_line((0.0, 0.0), (2.0, 30.0))?;
 
     framebuffer.save("line_test.bmp")?;
 
     let mut framebuffer = Framebuffer::new(20, 20);
     framebuffer.clear();
 
-    // framebuffer.set_current_color(0);
     framebuffer.paint_line((5.0, 5.0), (15.0, 5.0))?;
     framebuffer.paint_line((15.0, 5.0), (15.0, 15.0))?;
     framebuffer.paint_line((15.0, 15.0), (5.0, 15.0))?;
     framebuffer.paint_line((5.0, 15.0), (5.0, 5.0))?;
 
     framebuffer.save("square_test.bmp")?;
+
+    let mut framebuffer = Framebuffer::new(300, 300);
+    framebuffer.clear();
+
+    framebuffer.paint_polygon(vec![(50.0, 5.0), (20.0, 20.0), (70.0, 7.0), (150.0, 200.0)])?;
+    framebuffer.save("polygon_test.bmp")?;
 
     Ok(())
 }
