@@ -1,11 +1,8 @@
 use std::{ops::Deref, usize};
 
-use crate::{
-    are_equal,
-    bmp::write_bmp_file,
-    color::Color,
-    point::{slope, Point},
-};
+use nalgebra_glm::Vec3;
+
+use crate::{are_equal, bmp::write_bmp_file, color::Color};
 
 #[derive(Debug)]
 pub struct Framebuffer {
@@ -72,7 +69,7 @@ impl Framebuffer {
     /// The paint origin is located on the top left corner of the window.
     ///
     /// The color used is the one provided by `current_color`.
-    pub fn paint_point(&mut self, point: impl Into<Point>) -> Result<(), PaintPointErrors> {
+    pub fn paint_point(&mut self, point: glm::Vec3) -> Result<(), PaintPointErrors> {
         let Framebuffer {
             width,
             height,
@@ -80,7 +77,8 @@ impl Framebuffer {
             current_color,
             ..
         } = self;
-        let Point { x, y } = point.into();
+        let x = point.x;
+        let y = point.y;
 
         if x < 0.0 {
             Err(PaintPointErrors::XTooSmall)?
@@ -104,13 +102,12 @@ impl Framebuffer {
     }
 
     /// Paints a line that extends from `p1` to `p2` with the color of `current_color`.
-    pub fn paint_line(
-        &mut self,
-        p1: impl Into<Point>,
-        p2: impl Into<Point>,
-    ) -> Result<(), PaintPointErrors> {
-        let Point { x: x0, y: y0 } = p1.into();
-        let Point { x: x1, y: y1 } = p2.into();
+    pub fn paint_line(&mut self, p1: glm::Vec3, p2: glm::Vec3) -> Result<(), PaintPointErrors> {
+        let x0 = p1.x;
+        let y0 = p1.y;
+
+        let x1 = p2.x;
+        let y1 = p2.y;
 
         let delta_x = (x1 - x0).abs();
         let delta_y = (y1 - y0).abs();
@@ -124,7 +121,7 @@ impl Framebuffer {
         let mut current_y = y0;
 
         loop {
-            self.paint_point((current_x, current_y))?;
+            self.paint_point(Vec3::new(current_x, current_y, 0.0))?;
 
             let reached_x1 = are_equal(current_x, x1, f32::EPSILON);
             let reached_y1 = are_equal(current_y, y1, f32::EPSILON);
@@ -150,19 +147,16 @@ impl Framebuffer {
     }
 
     /// Paints the given polygon to the screen
-    pub fn paint_polygon<P>(&mut self, mut points: Vec<P>) -> Result<(), PaintPointErrors>
-    where
-        P: Into<Point> + Clone,
-    {
+    pub fn paint_polygon(&mut self, mut points: Vec<glm::Vec3>) -> Result<(), PaintPointErrors> {
         match points.len() {
             1 => self.paint_point(points.remove(0)),
             _ => {
-                let a = points[0].clone();
+                let a = points[0];
                 points.push(a);
 
                 points
                     .windows(2)
-                    .try_for_each(|ps| self.paint_line(ps[0].clone(), ps[1].clone()))
+                    .try_for_each(|ps| self.paint_line(ps[0], ps[1]))
             }
         }
     }
