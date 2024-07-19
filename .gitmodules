@@ -1,3 +1,6 @@
 [submodule "FillingPolygon"]
 	path = FillingPolygon
 	url = https://github.com/ElrohirGT/FillingPolygon
+[submodule "OxiConway"]
+	path = OxiConway
+	url = https://github.com/ElrohirGT/OxiConway
