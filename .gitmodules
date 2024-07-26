@@ -4,3 +4,6 @@
 [submodule "OxiConway"]
 	path = OxiConway
 	url = https://github.com/ElrohirGT/OxiConway
+[submodule "Hornystein"]
+	path = Hornystein
+	url = https://github.com/ElrohirGT/Hornystein.git
