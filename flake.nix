@@ -48,6 +48,9 @@
             rust-bin.stable.latest.default
             openssl
             pkg-config
+            # For Hornystein in Linux
+            xdotool
+            xorg.libXcursor
           ];
 
           shellHook = ''
