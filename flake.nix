@@ -67,6 +67,7 @@
               homepage = "https://github.com/ElrohirGT/Hornystein";
               license = pkgs.lib.licenses.mit;
               maintainers = [];
+              platforms = pkgs.lib.platforms.unix;
             };
           };
         # mazeFile = builtins.path {
