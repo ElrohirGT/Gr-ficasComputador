@@ -50,10 +50,10 @@
           # '';
 
           # cargoLock.lockFile = ./Hornystein/Cargo.lock;
-          # cargoLock = {
-          #   lockFile = ./Hornystein/Cargo.lock;
-          #   allowBuiltinFetchGit = true;
-          # };
+          cargoLock = {
+            lockFile = ./Hornystein/Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
 
           meta = {
             description = "A Wolfstein look a like with lolis and more!";
