@@ -39,8 +39,12 @@
   in {
     packages = forAllSystems {
       function = {pkgs, ...}: let
+        rustPlatform = pkgs.makeRustPlatform {
+          cargo = pkgs.rust-bin.stable.latest.cargo;
+          rustc = pkgs.rust-bin.stable.latest.rustc;
+        };
         hornysteinPkg =
-          pkgs.rustPlatform.buildRustPackage
+          rustPlatform.buildRustPackage
           {
             pname = "hornystein-bin";
             version = "0.1";
@@ -64,8 +68,7 @@
               license = pkgs.lib.licenses.mit;
               maintainers = [];
             };
-          }
-          .override {rust = pkgs.rust;};
+          };
         # mazeFile = builtins.path {
         #   path = ./Hornystein/maze;
         #   name = "mazeFile";
