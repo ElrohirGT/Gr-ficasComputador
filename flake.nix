@@ -43,7 +43,12 @@
           inherit (pkgs.rust-bin.stable.latest) cargo rustc rust-std;
         };
         hornysteinPkg =
-          rustPlatform.buildRustPackage
+          pkgs.rustPlatform.override
+          {
+            rustc = pkgs.rust-bin.stable.latest.rustc;
+            cargo = pkgs.rust-bin.stable.latest.cargo;
+          }
+          .buildRustPackage
           {
             pname = "hornystein-bin";
             version = "0.1";
