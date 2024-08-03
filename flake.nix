@@ -75,9 +75,10 @@
         mazeFile = ./Hornystein/maze;
         assets = ./Hornystein/night_assets/.;
       in {
+        # Use: nix run '.?submodules=1#hornystein'
         hornystein = pkgs.writeShellApplication {
           name = "hornystein";
-          runtimeInputs = [hornysteinPkg];
+          runtimeInputs = [hornysteinPkg.override {rust = pkgs.rust;}];
           text = ''
             hornystein-bin
           '';
