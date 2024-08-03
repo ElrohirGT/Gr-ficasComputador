@@ -42,10 +42,7 @@
           pname = "hornystein-bin";
           version = "0.1";
 
-          src = builtins.path {
-            path = ./Hornystein;
-            name = ".";
-          };
+          src = ./Hornystein/.;
 
           cargoHash = "";
           # postPatch = ''
