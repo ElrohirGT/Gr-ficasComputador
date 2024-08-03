@@ -40,8 +40,7 @@
     packages = forAllSystems {
       function = {pkgs, ...}: let
         rustPlatform = pkgs.makeRustPlatform {
-          cargo = pkgs.rust-bin.stable.latest.cargo;
-          rustc = pkgs.rust-bin.stable.latest.rustc;
+          inherit (pkgs.rust-bin.stable.latest.default) cargo rustc;
         };
         hornysteinPkg =
           rustPlatform.buildRustPackage
