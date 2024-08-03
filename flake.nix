@@ -62,12 +62,20 @@
             maintainers = [];
           };
         };
+        mazeFile = builtins.path {
+          path = ./Hornystein/maze;
+          name = "mazeFile";
+        };
+        assets = builtins.path {
+          path = ./Hornystein/night_assets/.;
+          name = "horny-stein_assets";
+        };
       in {
         hornystein = pkgs.writeShellApplication {
           name = "hornystein";
           runtimeInputs = [hornysteinPkg];
           text = ''
-            hornystein-bin ${./Hornystein/maze} ${./Hornystein/night_assets/.}
+            hornystein-bin ${mazeFile} ${assets}
           '';
         };
       };
