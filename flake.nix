@@ -50,6 +50,8 @@
 
             src = ./Hornystein/.;
 
+            buildInputs = with pkgs; [pkg-config];
+
             # cargoHash = "";
             # postPatch = ''
             #   ln -s ${./Cargo.lock} Cargo.lock
