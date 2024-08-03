@@ -7,12 +7,19 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    source = {
+      flake = false;
+      url = "file:.";
+      type = "git";
+      submodules = true;
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     rust-overlay,
+    ...
   }: let
     forAllSystems = {
       pkgs ? nixpkgs,
@@ -44,7 +51,7 @@
 
           src = ./Hornystein/.;
 
-          cargoHash = "";
+          # cargoHash = "";
           # postPatch = ''
           #   ln -s ${./Cargo.lock} Cargo.lock
           # '';
