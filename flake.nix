@@ -39,11 +39,11 @@
   in {
     packages = forAllSystems {
       function = {pkgs, ...}: let
-        rustPlatform = pkgs.makeRustPlatform {
-          inherit (pkgs.rust-bin.stable.latest) cargo rustc rust-std;
-        };
+        # rustPlatform = pkgs.makeRustPlatform {
+        #   inherit (pkgs.rust-bin.stable.latest) cargo rustc rust-std;
+        # };
         hornysteinPkg =
-          rustPlatform.buildRustPackage
+          pkgs.rustPlatform.buildRustPackage
           {
             pname = "hornystein-bin";
             version = "0.1";
