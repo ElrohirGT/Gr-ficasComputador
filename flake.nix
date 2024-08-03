@@ -36,7 +36,45 @@
           inherit system;
         });
   in {
-    packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
+    packages = forAllSystems {
+      function = {pkgs, ...}: let
+        hornysteinPkg = pkgs.rustPlatform.buildRustPackage {
+          pname = "hornystein-bin";
+          version = "0.1";
+
+          src = builtins.path {
+            path = ./Hornystein;
+            name = ".";
+          };
+
+          cargoHash = "";
+          # postPatch = ''
+          #   ln -s ${./Cargo.lock} Cargo.lock
+          # '';
+
+          # cargoLock.lockFile = ./Hornystein/Cargo.lock;
+          # cargoLock = {
+          #   lockFile = ./Hornystein/Cargo.lock;
+          #   allowBuiltinFetchGit = true;
+          # };
+
+          meta = {
+            description = "A Wolfstein look a like with lolis and more!";
+            homepage = "https://github.com/ElrohirGT/Hornystein";
+            license = pkgs.lib.licenses.mit;
+            maintainers = [];
+          };
+        };
+      in {
+        hornystein = pkgs.writeShellApplication {
+          name = "hornystein";
+          runtimeInputs = [hornysteinPkg];
+          text = ''
+            hornystein-bin ${./Hornystein/maze} ${./Hornystein/night_assets}
+          '';
+        };
+      };
+    };
 
     devShells = forAllSystems {
       function = {
