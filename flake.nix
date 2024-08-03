@@ -67,7 +67,7 @@
           name = "hornystein";
           runtimeInputs = [hornysteinPkg];
           text = ''
-            hornystein-bin ${./Hornystein/maze} ${./Hornystein/night_assets}
+            hornystein-bin ${./Hornystein/maze} ${./Hornystein/night_assets/.}
           '';
         };
       };
