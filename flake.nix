@@ -39,30 +39,33 @@
   in {
     packages = forAllSystems {
       function = {pkgs, ...}: let
-        hornysteinPkg = pkgs.rustPlatform.buildRustPackage {
-          pname = "hornystein-bin";
-          version = "0.1";
+        hornysteinPkg =
+          pkgs.rustPlatform.buildRustPackage
+          {
+            pname = "hornystein-bin";
+            version = "0.1";
 
-          src = ./Hornystein/.;
+            src = ./Hornystein/.;
 
-          # cargoHash = "";
-          # postPatch = ''
-          #   ln -s ${./Cargo.lock} Cargo.lock
-          # '';
+            # cargoHash = "";
+            # postPatch = ''
+            #   ln -s ${./Cargo.lock} Cargo.lock
+            # '';
 
-          # cargoLock.lockFile = ./Hornystein/Cargo.lock;
-          cargoLock = {
-            lockFile = ./Hornystein/Cargo.lock;
-            allowBuiltinFetchGit = true;
-          };
+            # cargoLock.lockFile = ./Hornystein/Cargo.lock;
+            cargoLock = {
+              lockFile = ./Hornystein/Cargo.lock;
+              allowBuiltinFetchGit = true;
+            };
 
-          meta = {
-            description = "A Wolfstein look a like with lolis and more!";
-            homepage = "https://github.com/ElrohirGT/Hornystein";
-            license = pkgs.lib.licenses.mit;
-            maintainers = [];
-          };
-        };
+            meta = {
+              description = "A Wolfstein look a like with lolis and more!";
+              homepage = "https://github.com/ElrohirGT/Hornystein";
+              license = pkgs.lib.licenses.mit;
+              maintainers = [];
+            };
+          }
+          .override {rust = pkgs.rust;};
         # mazeFile = builtins.path {
         #   path = ./Hornystein/maze;
         #   name = "mazeFile";
@@ -78,7 +81,7 @@
         # Use: nix run '.?submodules=1#hornystein'
         hornystein = pkgs.writeShellApplication {
           name = "hornystein";
-          runtimeInputs = [hornysteinPkg.override {rust = pkgs.rust;}];
+          runtimeInputs = [hornysteinPkg];
           text = ''
             hornystein-bin
           '';
