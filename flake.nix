@@ -84,7 +84,7 @@
         # Use: nix run '.?submodules=1#hornystein'
         hornystein = pkgs.writeShellApplication {
           name = "hornystein";
-          runtimeInputs = [hornysteinPkg];
+          runtimeInputs = [hornysteinPkg pkgs.pkg-config];
           text = ''
             hornystein-bin ${mazeFile} ${assets}
           '';
