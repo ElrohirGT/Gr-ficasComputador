@@ -50,7 +50,7 @@
 
             src = ./Hornystein/.;
 
-            buildInputs = with pkgs; [pkg-config];
+            nativeBuildInputs = with pkgs; [pkg-config];
 
             # cargoHash = "";
             # postPatch = ''
