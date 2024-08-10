@@ -7,3 +7,6 @@
 [submodule "Hornystein"]
 	path = Hornystein
 	url = https://github.com/ElrohirGT/Hornystein.git
+[submodule "Raytracing"]
+	path = Raytracing
+	url = https://github.com/ElrohirGT/Raytracing
