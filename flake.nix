@@ -7,12 +7,17 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    crane = {
+      url = "github:ipetkov/crane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     rust-overlay,
+    crane,
     ...
   }: let
     forAllSystems = {
@@ -39,49 +44,23 @@
   in {
     packages = forAllSystems {
       function = {pkgs, ...}: let
-        # rustPlatform = pkgs.makeRustPlatform {
-        #   inherit (pkgs.rust-bin.stable.latest) cargo rustc rust-std;
-        # };
-        hornysteinPkg =
-          pkgs.rustPlatform.buildRustPackage
-          {
-            pname = "hornystein-bin";
-            version = "0.1";
-
-            src = ./Hornystein/.;
-
-            # nativeBuildInputs = with pkgs; [pkg-config];
-            nativeBuildInputs = [
-              pkgs.pkg-config
-            ];
-
-            # cargoHash = "";
-            # postPatch = ''
-            #   ln -s ${./Cargo.lock} Cargo.lock
-            # '';
-
-            # cargoLock.lockFile = ./Hornystein/Cargo.lock;
-            cargoLock = {
-              lockFile = ./Hornystein/Cargo.lock;
-              allowBuiltinFetchGit = true;
-            };
-
-            meta = {
-              description = "A Wolfstein look a like with lolis and more!";
-              homepage = "https://github.com/ElrohirGT/Hornystein";
-              license = pkgs.lib.licenses.mit;
-              maintainers = [];
-              platforms = pkgs.lib.platforms.unix;
-            };
-          };
-        # mazeFile = builtins.path {
-        #   path = ./Hornystein/maze;
-        #   name = "mazeFile";
-        # };
-        # assets = builtins.path {
-        #   path = ./Hornystein/night_assets/.;
-        #   name = "horny-stein_assets";
-        # };
+        craneLib = crane.mkLib pkgs;
+        src = craneLib.cleanCargoSource ./.;
+        commonArgs = {
+          inherit src;
+          # strictDeps = true;
+        };
+        cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+        hornysteinPkg = craneLib.buildPackage (commonArgs
+          // {
+            inherit cargoArtifacts;
+            cargoLock = ./Hornystein/Cargo.lock;
+            cargoToml = ./Hornystein/Cargo.toml;
+            postUnpack = ''
+              cd $sourceRoot/Hornystein
+              sourceRoot="."
+            '';
+          });
 
         mazeFile = ./Hornystein/maze;
         assets = ./Hornystein/night_assets/.;
